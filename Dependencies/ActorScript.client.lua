@@ -1,14 +1,11 @@
-print('--// ROBLOX //--')
+
+print('HASDHasid')
 -- // Types \\ --
 
 type dictionary = { [string]: any }
 type array = { [number]: any }
 local ActorModule = {}
 ActorModule.__index = ActorModule
-
--- // Objects \\ --
-
-local Event = script.Parent.Event
 
 -- // Services \\ --
 

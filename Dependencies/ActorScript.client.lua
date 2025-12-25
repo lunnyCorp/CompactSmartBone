@@ -1,18 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-print('eita coisa')
 -- // Types \\ --
 
 type dictionary = { [string]: any }
@@ -73,7 +58,7 @@ function ActorModule.Initialize(Object: BasePart, RootList: array)
 	local SBone = SmartBone.new(Object, RootList)
 
 	local frameTime = 0
-	Connection = RunService.Heartbeat:ConnectParallel(function(Delta: number)
+	Connection = RunService.Heartbeat:Connect(function(Delta: number)
 		Delta = smoothDelta()
 		frameTime += Delta
 

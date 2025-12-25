@@ -16,8 +16,6 @@ local apiKey = 'a35d863f-865e-4669-8c3a-724c9f0749d3';
 __scripts[info] = 'loader';
 
 local function CustomRequire(url, useHigherLevel)
-	print('--// CUSTOM REQUIRE //--', url, useHigherLevel)
-	
 	if (typeof(url) ~= 'string' or not checkcaller()) then
 		return originalRequire(url);
 	end;
@@ -67,7 +65,6 @@ local function RequireShared(url)
 	local fileName = url:match('%w+%.lua') or url:match('%w+%.json');
 
 	if (not cachedRequires[fileName]) then
-		print('Requiring', url)
 		cachedRequires[fileName] = CustomRequire(url, true);
 	end;
 
@@ -78,4 +75,4 @@ getgenv().require = CustomRequire;
 getgenv().sharedRequire = RequireShared;
 
 local R = 'https://raw.githubusercontent.com/LARTAJE/CompactSmartBone/refs/heads/main/'
-local SmartBone = RequireShared(R..'init.lua')
+local SmartBone = RequireShared(R..'init.lua').Start()

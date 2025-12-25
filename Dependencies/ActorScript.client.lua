@@ -1,3 +1,4 @@
+print('--// ACTOR SCRIPT RAN //--')
 task.spawn(function()
 	repeat
 		task.wait()
@@ -7,6 +8,7 @@ task.spawn(function()
 
 	type dictionary = { [string]: any }
 	type array = { [number]: any }
+	local ActorModule = {}
 
 	-- // Objects \\ --
 
@@ -59,13 +61,13 @@ task.spawn(function()
 
 		return roundNumber(frameRate * ((1/frameRate)^2) + .001)
 	end
-
-	local function Initialize(Object: BasePart, RootList: array)
+	
+	local Connection = nil
+	function ActorModule.Initialize(Object: BasePart, RootList: array)
 		local SBone = SmartBone.new(Object, RootList)
 
 		local frameTime = 0
-
-		SBone.SimulationConnection = RunService.Heartbeat:ConnectParallel(function(Delta: number)
+		Connection = RunService.Heartbeat:ConnectParallel(function(Delta: number)
 			Delta = smoothDelta()
 			frameTime += Delta
 
@@ -130,13 +132,11 @@ task.spawn(function()
 				end
 			end
 		end)
-
+		SBone.SimulationConnection = Connection
 		return SBone
 	end
-
-	--[[ Event Handler ]]--
-
-	Event.OnInvoke = function(Object: BasePart, RootList: array)
-		return Initialize(Object, RootList)
+	function ActorModule.Stop()
+		Connection:Disconnect()
 	end
+	return ActorModule
 end)

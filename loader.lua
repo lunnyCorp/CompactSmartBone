@@ -1,4 +1,5 @@
 --// COMPACT SMARTBONE V2 //--
+print('--// COMPACT SMART BONE //--')
 
 local HttpService = game:GetService('HttpService');
 local cachedRequires = {};
@@ -10,10 +11,13 @@ getgenv().__scripts = __scripts;
 local debugInfo = debug.info;
 local info = debugInfo(1, 's');
 local originalRequire = require;
+local request = (syn and syn.request) or (http and http.request) or (request)
 local apiKey = 'a35d863f-865e-4669-8c3a-724c9f0749d3';
 __scripts[info] = 'loader';
 
 local function CustomRequire(url, useHigherLevel)
+	print('--// CUSTOM REQUIRE //--', url, useHigherLevel)
+	
 	if (typeof(url) ~= 'string' or not checkcaller()) then
 		return originalRequire(url);
 	end;
@@ -21,7 +25,7 @@ local function CustomRequire(url, useHigherLevel)
 	local requirerScriptId = debugInfo(useHigherLevel and 3 or 2, 's');
 	local requirerScript = __scripts[requirerScriptId];
 
-	local requestData = syn.request({
+	local requestData = request({
 		Url = string.format('%s/%s', 'http://localhost:4566', 'getFile'),
 		Method = 'POST',
 		Headers = {

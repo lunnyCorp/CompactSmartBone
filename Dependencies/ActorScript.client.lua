@@ -1,4 +1,6 @@
-if not script.Parent:IsA("Actor") then return end
+if not script.Parent:IsA("Actor") then
+	return
+end
 
 -- // Types \\ --
 
@@ -21,25 +23,12 @@ local Paths = {
 	ReplicatedStorage,
 	Players.LocalPlayer:WaitForChild("PlayerScripts"),
 }
-local Module
-for _,service in pairs(Paths) do
-	local found = service:FindFirstChild("SmartBone", true)
-	if found and found:IsA("ModuleScript") then
-		Module = found
-		break
-	end
-end
-if not Module then
-	warn("SmartBone was not found!")
-	return
-end
+local Require = getgenv().sharedRequire
 
-local Dependencies = Module:WaitForChild("Dependencies")
-local Config = require(Dependencies:WaitForChild("Config"))
+local Config = Require('../Config.lua')
 
-local SmartBone = require(Module)
-local CameraUtil = require(Dependencies:WaitForChild("CameraUtil"))
-
+local SmartBone = Require('../../init.lua')
+local CameraUtil = Require('../CameraUtil.lua')
 
 local DEBUG = Config.Debug
 
@@ -100,7 +89,7 @@ local function Initialize(Object: BasePart, RootList: array)
 				if SBone.InRange == false then
 					SBone.InRange = true
 				end
-				
+
 				SBone:UpdateBones(Delta, UpdateRate)
 
 				debug.profileend()
@@ -108,7 +97,7 @@ local function Initialize(Object: BasePart, RootList: array)
 				task.synchronize()
 
 				debug.profilebegin("SoftBoneTransform")
-				
+
 				for _, _ParticleTree in SBone.ParticleTrees do
 					SBone:TransformBones(_ParticleTree, Delta)
 					if DEBUG then
@@ -119,7 +108,7 @@ local function Initialize(Object: BasePart, RootList: array)
 				debug.profileend()
 
 				task.desynchronize()
-				
+
 			else
 				if SBone.InRange == true then
 					SBone.InRange = false

@@ -1,4 +1,4 @@
-print('--// ACTOR SCRIPT STARTED //--')
+print('.--// ACTOR SCRIPT STARTED //--')
 task.spawn(function()
 	repeat
 		task.wait()

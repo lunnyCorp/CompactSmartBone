@@ -58,7 +58,7 @@ function ActorModule.Initialize(Object: BasePart, RootList: array)
 	local SBone = SmartBone.new(Object, RootList)
 
 	local frameTime = 0
-	Connection = RunService.RenderStepped:Connect(function(Delta: number)
+	Connection = RunService.PostSimulation:Connect(function(Delta: number)
 		Delta = smoothDelta()
 		frameTime += Delta
 

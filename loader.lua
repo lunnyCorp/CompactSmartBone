@@ -12,7 +12,6 @@ local debugInfo = debug.info;
 local info = debugInfo(1, 's');
 local originalRequire = require;
 local request = (syn and syn.request) or (http and http.request) or (request)
-local apiKey = 'a35d863f-865e-4669-8c3a-724c9f0749d3';
 __scripts[info] = 'loader';
 
 local function CustomRequire(url, useHigherLevel)

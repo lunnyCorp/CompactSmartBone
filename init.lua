@@ -79,6 +79,8 @@ local Config = Require(mrp..'/Dependencies/Config.lua')
 local UnitConversion = Require(mrp..'/Dependencies/UnitConversion.lua')
 local DefaultSettings = Require(mrp..'/Dependencies/DefaultSettings.lua')
 
+local CameraUtil = Require(mrp..'/Dependencies/CameraUtil.lua')
+
 local ParticleTree = Require(mrp..'/Components/ParticleTree.lua')
 local Particle = Require(mrp..'/Components/Particle.lua')
 
@@ -426,14 +428,6 @@ function module:TransformBones(particleTree: particleTree)
 	end
 end
 
-function module:DEBUG(particleTree: particleTree)
-	for _, point in particleTree.Particles do
-		if point then
-			point.DebugPart.CFrame = CFrame.new(point.Position)
-		end
-	end
-end
-
 function module:RunLoop(particleTree: particleTree, Delta: number, UpdateRate: number)
 	local ready = true
 	local timeVar = Delta * 10
@@ -486,9 +480,35 @@ function module:UpdateBones(Delta: number, UpdateRate: number)
 	end
 end
 
+local timeFunc = os.clock
+local oldTime = timeFunc()
+local frameRate = 60
+local frameRateTable = {}
+
+--[[ Local Functions ]] --
+
+local round = 1000
+
+local function roundNumber(num)
+	return  math.floor((num * round) + 0.5) / round
+end
+
+local function smoothDelta()
+	local currentTime = timeFunc()
+
+	for index = #frameRateTable,1,-1 do
+		frameRateTable[index + 1] = (frameRateTable[index] >= currentTime - 1) and frameRateTable[index] or nil
+	end
+
+	frameRateTable[1] = currentTime
+	frameRate =  math.floor((timeFunc() - oldTime >= 1 and #frameRateTable) or (#frameRateTable / (timeFunc() - oldTime)))
+
+	return roundNumber(frameRate * ((1/frameRate)^2) + .001)
+end
+
 function module.Start()
-	print('--// STARTED COMPACT SMART BONE //--')
-	local ActorModule =  Require(mrp..'/Dependencies/ActorScript.client.lua')
+	print('--// STARTED COMPACT SMART BONE V2 //--')
+	--local ActorModule =  Require(mrp..'/Dependencies/ActorScript.client.lua')
 	local Player = game.Players.LocalPlayer
 
 	local ActorsFolder = Instance.new("Folder")
@@ -533,7 +553,55 @@ function module.Start()
 				Event.Parent = SmartBoneActor
 				
 				SmartBoneActor.Parent = ActorsFolder
-				SmartBones[Object] = ActorModule.Initialize(Object, RootList)
+				SmartBones[Object] = module.new(Object, RootList)
+				
+				local frameTime = 0
+				local SBone = SmartBones[Object]
+				SBone.SimulationConnection = RunService.RenderStepped:Connect(function(Delta: number)
+					Delta = smoothDelta()
+					frameTime += Delta
+
+					local camPosition = workspace.CurrentCamera.CFrame.Position
+					local rootPosition = SBone.RootPart.Position
+					local throttleDistance = SBone.Settings.ThrottleDistance
+					local distance = (camPosition - rootPosition).Magnitude
+					local activationDistance = SBone.Settings.ActivationDistance
+
+					local updateDistance = math.clamp(distance - throttleDistance, 0, activationDistance)
+					local updateThrottle = 1 - math.clamp(updateDistance / activationDistance, 0, 1)
+
+					local UpdateRate = math.floor(math.clamp(updateThrottle * SBone.Settings.UpdateRate, 1, SBone.Settings.UpdateRate))
+
+					local WithinViewport = CameraUtil.WithinViewport(SBone.RootPart)
+					if frameTime >= (1/UpdateRate) then
+						if distance < activationDistance and WithinViewport then
+							Delta = frameTime
+							frameTime = 0
+
+							if SBone.InRange == false then
+								SBone.InRange = true
+							end
+
+							SBone:UpdateBones(Delta, UpdateRate)
+
+							for _, _ParticleTree in SBone.ParticleTrees do
+								SBone:TransformBones(_ParticleTree, Delta)
+							end
+						else
+							if SBone.InRange == true then
+								SBone.InRange = false
+
+								for _, _ParticleTree in SBone.ParticleTrees do
+									SBone:ResetParticles(_ParticleTree)
+								end
+
+								for _, _ParticleTree in SBone.ParticleTrees do
+									SBone:ResetTransforms(_ParticleTree, Delta)
+								end
+							end
+						end
+					end
+				end)
 
 				SmartBoneActor.Name = Object.Name .. SmartBones[Object].ID
 
@@ -560,7 +628,7 @@ function module.Start()
 	local function removeSmartBoneObject(Object: BasePart)
 		if SmartBones[Object] then
 			DebugPrint("Removing SmartBone Object with ID: " .. SmartBones[Object].ID)
-			print(`REMOVING INSTANCE 6`, Object)
+			print(`REMOVING INSTANCE 5`, Object)
 			task.spawn(function()
 				for _, Connection in pairs(SmartBones[Object].Connections) do
 					Connection:Disconnect()

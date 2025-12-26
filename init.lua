@@ -84,7 +84,6 @@ local Particle = Require(mrp..'/Components/Particle.lua')
 
 local SettingsMath = Require(mrp..'/Dependencies/SettingsMath.lua')
 local Utilities = Require(mrp..'/Dependencies/Utilities.lua')
-local ActorModule =  Require(mrp..'/Dependencies/ActorScript.client.lua')
 
 local ID_SEED = 12098135901304
 local ID_RANDOM = Random.new(ID_SEED)
@@ -489,6 +488,7 @@ end
 
 function module.Start()
 	print('--// STARTED COMPACT SMART BONE //--')
+	local ActorModule =  Require(mrp..'/Dependencies/ActorScript.client.lua')
 	local Player = game.Players.LocalPlayer
 
 	local ActorsFolder = Instance.new("Folder")
@@ -560,7 +560,7 @@ function module.Start()
 	local function removeSmartBoneObject(Object: BasePart)
 		if SmartBones[Object] then
 			DebugPrint("Removing SmartBone Object with ID: " .. SmartBones[Object].ID)
-			print(`REMOVING INSTANCE 5`, Object)
+			print(`REMOVING INSTANCE 6`, Object)
 			task.spawn(function()
 				for _, Connection in pairs(SmartBones[Object].Connections) do
 					Connection:Disconnect()

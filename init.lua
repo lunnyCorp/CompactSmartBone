@@ -1,7 +1,7 @@
 --[[ SmartBone Version 0.1.2 by Celnak ]] --
 
 -- // Types \\ --
-print('--// COMPACT SMART BONE V2 INIT //--')
+print('--// COMPACT SMART BONE INIT //--')
 
 type func = () -> ()
 type dictionary = { [string]: any }
@@ -493,21 +493,8 @@ local function roundNumber(num)
 	return  math.floor((num * round) + 0.5) / round
 end
 
-local function smoothDelta()
-	local currentTime = timeFunc()
-
-	for index = #frameRateTable,1,-1 do
-		frameRateTable[index + 1] = (frameRateTable[index] >= currentTime - 1) and frameRateTable[index] or nil
-	end
-
-	frameRateTable[1] = currentTime
-	frameRate =  math.floor((timeFunc() - oldTime >= 1 and #frameRateTable) or (#frameRateTable / (timeFunc() - oldTime)))
-
-	return roundNumber(frameRate * ((1/frameRate)^2) + .001)
-end
-
 function module.Start()
-	print('--// STARTED COMPACT SMART BONE V3 //--')
+	print('--// STARTED COMPACT SMART BONE V2 //--')
 	--local ActorModule =  Require(mrp..'/Dependencies/ActorScript.client.lua')
 	local Player = game.Players.LocalPlayer
 
@@ -557,8 +544,7 @@ function module.Start()
 				
 				local frameTime = 0
 				local SBone = SmartBones[Object]
-				SBone.SimulationConnection = RunService.RenderStepped:Connect(function(Delta: number)
-					Delta = smoothDelta()
+				SBone.SimulationConnection = RunService.Heartbeat:Connect(function(Delta: number)
 					frameTime += Delta
 
 					local camPosition = workspace.CurrentCamera.CFrame.Position
@@ -628,7 +614,6 @@ function module.Start()
 	local function removeSmartBoneObject(Object: BasePart)
 		if SmartBones[Object] then
 			DebugPrint("Removing SmartBone Object with ID: " .. SmartBones[Object].ID)
-			print(`REMOVING INSTANCE 5`, Object)
 			task.spawn(function()
 				for _, Connection in pairs(SmartBones[Object].Connections) do
 					Connection:Disconnect()

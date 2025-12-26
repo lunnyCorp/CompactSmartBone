@@ -1,7 +1,7 @@
 --[[ SmartBone Version 0.1.2 by Celnak ]] --
 
 -- // Types \\ --
-print('--// COMPACT SMART BONE INIT //--')
+print('--// COMPACT SMART BONE V2 INIT //--')
 
 type func = () -> ()
 type dictionary = { [string]: any }
@@ -474,9 +474,9 @@ end
 
 function module:UpdateBones(Delta: number, UpdateRate: number)
 	for _, particleTree: particleTree in self.ParticleTrees do
-		task.spawn(self.PreUpdate, self, particleTree, Delta)
-		task.spawn(self.RunLoop, self, particleTree, Delta, UpdateRate)
-		task.spawn(self.CalculateTransforms, self, particleTree, Delta)
+		self:PreUpdate(particleTree, Delta)
+		self:RunLoop(particleTree, Delta, UpdateRate)
+		self:CalculateTransforms(particleTree, Delta)
 	end
 end
 
@@ -494,8 +494,6 @@ local function roundNumber(num)
 end
 
 function module.Start()
-	print('--// STARTED COMPACT SMART BONE V2 //--')
-	--local ActorModule =  Require(mrp..'/Dependencies/ActorScript.client.lua')
 	local Player = game.Players.LocalPlayer
 
 	local ActorsFolder = Instance.new("Folder")
@@ -518,7 +516,6 @@ function module.Start()
 			and game.Workspace:IsAncestorOf(Object)
 		then
 			local RootList = {}
-
 			if
 				Object:GetAttribute("Roots")
 				and Object:GetAttribute("Roots") ~= nil
@@ -532,6 +529,7 @@ function module.Start()
 					end
 				end
 			end
+			
 			if #RootList > 0 then
 				local SmartBoneActor = Instance.new("Actor")
 
@@ -595,7 +593,7 @@ function module.Start()
 					task.wait(.025)
 					SmartBones[Object] = nil
 					SmartBoneActor:Destroy()
-					print('TERMINATED BONE CONN')
+					print('Destroyed conn')
 				end)
 
 				table.insert(IgnoreList, Object)

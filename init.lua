@@ -540,7 +540,7 @@ function module.Start()
 				SmartBoneActor.Name = Object.Name .. SmartBones[Object].ID
 
 				SmartBones[Object].RemovedEvent.Event:Once(function()
-					ActorModule.Stop()
+					task.wait(.025)
 					SmartBones[Object] = nil
 					SmartBoneActor:Destroy()
 					print('TERMINATED BONE CONN')
@@ -562,7 +562,7 @@ function module.Start()
 	local function removeSmartBoneObject(Object: BasePart)
 		if SmartBones[Object] then
 			DebugPrint("Removing SmartBone Object with ID: " .. SmartBones[Object].ID)
-			print(`REMOVING INSTANCE 3`, Object)
+			print(`REMOVING INSTANCE 4`, Object)
 			task.spawn(function()
 				for _, Connection in pairs(SmartBones[Object].Connections) do
 					Connection:Disconnect()
@@ -580,16 +580,12 @@ function module.Start()
 				
 				SmartBones[Object].Removed = true
 				
-				task.wait()
-				
 				if CurrentControllers[SmartBones[Object].ID] then
 					CurrentControllers[SmartBones[Object].ID] = nil
 				end
 				
 				SmartBones[Object].RemovedEvent:Fire()
 				SmartBones[Object].RemovedEvent:Destroy()
-				
-				task.wait()
 
 				SmartBones[Object] = nil
 			end)

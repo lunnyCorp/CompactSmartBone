@@ -84,6 +84,7 @@ local Particle = Require(mrp..'/Components/Particle.lua')
 
 local SettingsMath = Require(mrp..'/Dependencies/SettingsMath.lua')
 local Utilities = Require(mrp..'/Dependencies/Utilities.lua')
+local ActorModule =  Require(mrp..'/Dependencies/ActorScript.client.lua')
 
 local ID_SEED = 12098135901304
 local ID_RANDOM = Random.new(ID_SEED)
@@ -524,7 +525,6 @@ function module.Start()
 					end
 				end
 			end
-
 			if #RootList > 0 then
 				local SmartBoneActor = Instance.new("Actor")
 
@@ -533,8 +533,6 @@ function module.Start()
 				Event.Parent = SmartBoneActor
 				
 				SmartBoneActor.Parent = ActorsFolder
-				local ActorModule =  Require(mrp..'/Dependencies/ActorScript.client.lua')
-
 				SmartBones[Object] = ActorModule.Initialize(Object, RootList)
 
 				SmartBoneActor.Name = Object.Name .. SmartBones[Object].ID
@@ -562,7 +560,7 @@ function module.Start()
 	local function removeSmartBoneObject(Object: BasePart)
 		if SmartBones[Object] then
 			DebugPrint("Removing SmartBone Object with ID: " .. SmartBones[Object].ID)
-			print(`REMOVING INSTANCE 4`, Object)
+			print(`REMOVING INSTANCE 5`, Object)
 			task.spawn(function()
 				for _, Connection in pairs(SmartBones[Object].Connections) do
 					Connection:Disconnect()
@@ -592,7 +590,13 @@ function module.Start()
 		end
 	end
 
-	CollectionService:GetInstanceAddedSignal("SmartBone"):Connect(registerSmartBoneObject)
+	CollectionService:GetInstanceAddedSignal("SmartBone"):Connect(function(Object)
+		if not SmartBones[Object] and not table.find(IgnoreList, Object) then
+			task.spawn(function()
+				registerSmartBoneObject(Object)
+			end)
+		end
+	end)
 	CollectionService:GetInstanceRemovedSignal("SmartBone"):Connect(removeSmartBoneObject)
 
 	for _, Object in pairs(SmartBoneTags) do

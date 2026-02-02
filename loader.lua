@@ -73,5 +73,5 @@ end;
 getgenv().require = CustomRequire;
 getgenv().sharedRequire = RequireShared;
 
-local R = 'https://raw.githubusercontent.com/LARTAJE/CompactSmartBone/refs/heads/main/'
+local R = 'https://raw.githubusercontent.com/lunnyCorp/CompactSmartBone/refs/heads/main/'
 local SmartBone = RequireShared(R..'init.lua').Start()

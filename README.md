@@ -4,5 +4,5 @@ A compact version of smart bone for executors
 
 ```lua
 local request = (syn and syn.request) or (http and http.request) or (request)
-loadstring(request({ Url = "https://raw.githubusercontent.com/LARTAJE/CompactSmartBone/refs/heads/main/loader.lua" }).Body)()
+loadstring(request({ Url = "https://raw.githubusercontent.com/lunnyCorp/CompactSmartBone/refs/heads/main/loader.lua?token=GHSAT0AAAAAADTTON3TO24XEKCHDV3KHD7K2MBEKEQ" }).Body)()
 ```

@@ -7,8 +7,6 @@ type array = { [number]: any }
 type rootList = {
 	[number]: Bone
 }
-
-
 local FindSmartBone = game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild('Actors)
 if FindSmartBone then
 	print('Already running Smart Bone!')

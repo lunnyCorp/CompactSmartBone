@@ -1,14 +1,13 @@
 --[[ SmartBone Version 0.1.2 by Celnak ]] --
-
 -- // Types \\ --
-
 type func = () -> ()
 type dictionary = { [string]: any }
 type array = { [number]: any }
-
 type rootList = {
 	[number]: Bone
 }
+print('Started')
+
 type particle = {
 	Bone: Bone,
 	RestLength: number,
@@ -564,7 +563,7 @@ function module.Start()
 				end)
 				
 				SBone.SimulationConnection = RunService.PreSimulation:Connect(function(Delta: number)
-					Delta = shared.SDelta
+					Delta = SDelta
 					frameTime += Delta
 
 					local camPosition = workspace.CurrentCamera.CFrame.Position

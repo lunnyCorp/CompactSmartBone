@@ -1,7 +1,7 @@
 --[[ SmartBone Version 0.1.2 by Celnak ]] --
 
 -- // Types \\ --
-print('--// COMPACT SMART BONE V2 INIT //--')
+print('--// COMPACT SMART BONE INIT //--')
 
 type func = () -> ()
 type dictionary = { [string]: any }
@@ -183,7 +183,7 @@ function module:AppendParticles(particleTree: dictionary, Bone: Bone, ParentInde
 	particle.ParentIndex = ParentIndex
 	particle.BoneLength = BoneLength
 	particle.HeirarchyLength = 0
-	
+
 	if ParentIndex >= 1 then
 		BoneLength = (particleTree.Particles[ParentIndex].Bone.WorldPosition - particle.Position).Magnitude
 		particle.BoneLength = BoneLength
@@ -485,13 +485,27 @@ local oldTime = timeFunc()
 local frameRate = 60
 local frameRateTable = {}
 
---[[ Local Functions ]] --
-
 local round = 1000
 
 local function roundNumber(num)
 	return  math.floor((num * round) + 0.5) / round
 end
+
+
+local function smoothDelta()
+	local currentTime = timeFunc()
+
+	for index = #frameRateTable,1,-1 do
+		frameRateTable[index + 1] = (frameRateTable[index] >= currentTime - 1) and frameRateTable[index] or nil
+	end
+
+	frameRateTable[1] = currentTime
+	frameRate =  math.floor((timeFunc() - oldTime >= 1 and #frameRateTable) or (#frameRateTable / (timeFunc() - oldTime)))
+
+	return roundNumber(frameRate * ((1/frameRate)^2) + .001)
+end
+
+--[[ Local Functions ]] --
 
 function module.Start()
 	local Player = game.Players.LocalPlayer
@@ -499,6 +513,8 @@ function module.Start()
 	local ActorsFolder = Instance.new("Folder")
 	ActorsFolder.Name = "Actors"
 	ActorsFolder.Parent = Player:WaitForChild("PlayerScripts")
+
+
 
 	local function DebugPrint(String: string)
 		if DEBUG then
@@ -529,20 +545,26 @@ function module.Start()
 					end
 				end
 			end
-			
+
 			if #RootList > 0 then
 				local SmartBoneActor = Instance.new("Actor")
 
 				local Event = Instance.new("BindableFunction")
 				Event.Name = "Event"
 				Event.Parent = SmartBoneActor
-				
+
 				SmartBoneActor.Parent = ActorsFolder
 				SmartBones[Object] = module.new(Object, RootList)
-				
+
 				local frameTime = 0
 				local SBone = SmartBones[Object]
+				
+				RunService.RenderStepped:Connect(function()
+					shared.Delta = smoothDelta()
+				end)
+				
 				SBone.SimulationConnection = RunService.RenderStepped:Connect(function(Delta: number)
+					Delta = shared.Delta
 					frameTime += Delta
 
 					local camPosition = workspace.CurrentCamera.CFrame.Position
@@ -618,7 +640,7 @@ function module.Start()
 				end
 
 				SmartBones[Object].SimulationConnection:Disconnect()
-				
+
 				for _, particleTree: particleTree in SmartBones[Object].ParticleTrees do
 					for _, _Particle in particleTree.Particles do
 						for _, Recycling in _Particle.RecyclingBin do
@@ -626,13 +648,13 @@ function module.Start()
 						end
 					end
 				end
-				
+
 				SmartBones[Object].Removed = true
-				
+
 				if CurrentControllers[SmartBones[Object].ID] then
 					CurrentControllers[SmartBones[Object].ID] = nil
 				end
-				
+
 				SmartBones[Object].RemovedEvent:Fire()
 				SmartBones[Object].RemovedEvent:Destroy()
 

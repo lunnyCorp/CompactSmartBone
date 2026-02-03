@@ -9,9 +9,12 @@ type rootList = {
 }
 
 
-
-
-print('Started')
+local FindSmartBone = game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild('Actors)
+if FindSmartBone then
+	print('Already running Smart Bone!')
+	return
+end
+	
 type particle = {
 	Bone: Bone,
 	RestLength: number,
@@ -567,7 +570,7 @@ function module.Start()
 				end)
 				
 				SBone.SimulationConnection = RunService.PreSimulation:Connect(function(Delta: number)
-					Delta = SDelta
+					--Delta = SDelta
 					frameTime += Delta
 
 					local camPosition = workspace.CurrentCamera.CFrame.Position

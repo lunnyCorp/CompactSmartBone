@@ -3,11 +3,15 @@
 type func = () -> ()
 type dictionary = { [string]: any }
 type array = { [number]: any }
+
 type rootList = {
 	[number]: Bone
 }
-print('Started')
 
+
+
+
+print('Started')
 type particle = {
 	Bone: Bone,
 	RestLength: number,

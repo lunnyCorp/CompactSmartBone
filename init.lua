@@ -1,7 +1,7 @@
 --[[ SmartBone Version 0.1.2 by Celnak ]] --
 
 -- // Types \\ --
-print('--// COMPACT SMART BONE INIT //--')
+print('--// COMPACT SMART BONE V INIT //--')
 
 type func = () -> ()
 type dictionary = { [string]: any }
@@ -559,12 +559,13 @@ function module.Start()
 				local frameTime = 0
 				local SBone = SmartBones[Object]
 				
+				local SDelta = 0
 				RunService.RenderStepped:Connect(function()
-					shared.Delta = smoothDelta()
+					SDelta = smoothDelta()
 				end)
 				
-				SBone.SimulationConnection = RunService.RenderStepped:Connect(function(Delta: number)
-					Delta = shared.Delta
+				SBone.SimulationConnection = RunService.PreSimulation:Connect(function(Delta: number)
+					Delta = shared.SDelta
 					frameTime += Delta
 
 					local camPosition = workspace.CurrentCamera.CFrame.Position
